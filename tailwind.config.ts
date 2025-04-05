@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,15 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Energy-specific colors
+				energy: {
+					solar: '#f97316',      // Solar energy (orange)
+					battery: '#3b82f6',    // Battery (blue)
+					grid: '#8b5cf6',       // Grid power (purple)
+					ev: '#0ea5e9',         // EV charging (light blue)
+					consumption: '#64748b', // Home consumption (slate)
+					saving: '#22c55e',     // Savings/positive (green)
 				}
 			},
 			borderRadius: {
@@ -84,11 +94,29 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'flow': {
+					'0%, 100%': { 
+						strokeDashoffset: '100%' 
+					},
+					'50%': { 
+						strokeDashoffset: '0%' 
+					}
+				},
+				'pulse-opacity': {
+					'0%, 100%': { 
+						opacity: '0.6' 
+					},
+					'50%': { 
+						opacity: '1' 
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'flow': 'flow 3s ease-in-out infinite',
+				'pulse-opacity': 'pulse-opacity 2s ease-in-out infinite'
 			}
 		}
 	},
