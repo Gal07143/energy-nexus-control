@@ -4,6 +4,10 @@ import { DashboardHeader } from "@/components/DashboardHeader";
 import { EnergySummaryStats } from "@/components/EnergySummaryStats";
 import { EnergyFlowDiagram } from "@/components/EnergyFlowDiagram";
 import { EnergyOverview } from "@/components/EnergyOverview";
+import { EnergyForecast } from "@/components/EnergyForecast";
+import { EnergyOptimizationControls } from "@/components/EnergyOptimizationControls";
+import { EnergyAIInsights } from "@/components/EnergyAIInsights";
+import { DeviceIntegration } from "@/components/DeviceIntegration";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 const Index = () => {
@@ -20,6 +24,12 @@ const Index = () => {
               <DashboardHeader />
               <EnergySummaryStats />
               <EnergyFlowDiagram />
+              <EnergyForecast />
+              <EnergyOptimizationControls />
+              <div className="grid gap-4 md:grid-cols-2">
+                <EnergyAIInsights />
+                <DeviceIntegration />
+              </div>
               <EnergyOverview />
             </div>
           </div>
