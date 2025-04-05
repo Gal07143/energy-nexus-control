@@ -117,8 +117,29 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'flow': 'flow 3s ease-in-out infinite',
 				'pulse-opacity': 'pulse-opacity 2s ease-in-out infinite'
+			},
+			// Add stroke utilities for SVG
+			strokeWidth: {
+				'3': '3',
+			},
+			strokeDasharray: {
+				'dash': '10 5',
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		require("tailwindcss-animate"),
+		// Add a plugin to handle SVG properties
+		function({ addUtilities }) {
+			const newUtilities = {
+				'.fill-none': {
+					'fill': 'none',
+				},
+				'.stroke-dasharray-dash': {
+					'stroke-dasharray': '10 5',
+				},
+			};
+			addUtilities(newUtilities, ['responsive']);
+		}
+	],
 } satisfies Config;

@@ -97,7 +97,7 @@
 
 @layer components {
   .energy-flow-path {
-    @apply stroke-[3] fill-none stroke-dasharray-[10,5] animate-flow;
+    @apply stroke-3 fill-none stroke-dasharray-dash animate-flow;
   }
   
   .energy-node {
