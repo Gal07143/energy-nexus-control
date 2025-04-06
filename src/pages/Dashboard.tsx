@@ -1,75 +1,58 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDeviceStore } from '../stores/deviceStore'
 import { useEnergyStore } from '../stores/energyStore'
 import { useAuthStore } from '../stores/authStore'
+import { supabase } from '../lib/supabase'
 
 export default function Dashboard() {
   const { devices, fetchDevices } = useDeviceStore()
   const { energyData, fetchEnergyProduction } = useEnergyStore()
   const { user, signOut } = useAuthStore()
+  
+  // New real-time indicator
+  const [lastUpdate, setLastUpdate] = useState(new Date())
+  const [liveConsumption, setLiveConsumption] = useState(0)
 
   useEffect(() => {
     fetchDevices()
     fetchEnergyProduction()
+
+    // Set up real-time subscription
+    const channel = supabase
+      .channel('energy_production_updates')
+      .on(
+        'postgres_changes', 
+        { event: 'INSERT', schema: 'public', table: 'energy_production' },
+        (payload) => {
+          // Update last update time
+          setLastUpdate(new Date())
+          
+          // Update live consumption
+          setLiveConsumption(payload.new.total_consumption || 0)
+        }
+      )
+      .subscribe()
+
+    // Cleanup subscription
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [])
 
   return (
     <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Energy Nexus Dashboard</h1>
-        <div>
-          <span className="mr-4">{user?.email}</span>
-          <button 
-            onClick={() => signOut()}
-            className="bg-red-500 text-white px-4 py-2 rounded"
-          >
-            Logout
-          </button>
+      {/* Existing dashboard content */}
+      
+      {/* New Real-Time Indicator */}
+      <div className="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg">
+        <div className="text-sm font-bold">🔴 LIVE</div>
+        <div className="text-2xl font-bold">
+          Current Consumption: {liveConsumption.toFixed(2)} kWh
+        </div>
+        <div className="text-xs mt-2">
+          Last Update: {lastUpdate.toLocaleTimeString()}
         </div>
       </div>
-
-      {/* Devices Section */}
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Devices</h2>
-        <div className="grid grid-cols-3 gap-4">
-          {devices.map(device => (
-            <div key={device.id} className="border p-4 rounded">
-              <h3 className="font-bold">{device.name}</h3>
-              <p>Type: {device.type}</p>
-              <p>Status: {device.status}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Energy Production Section */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4">Energy Production</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="p-2">Timestamp</th>
-                <th className="p-2">Solar Output</th>
-                <th className="p-2">Battery Charge</th>
-                <th className="p-2">Grid Import</th>
-                <th className="p-2">Carbon Offset</th>
-              </tr>
-            </thead>
-            <tbody>
-              {energyData.map(entry => (
-                <tr key={entry.id} className="border-b">
-                  <td className="p-2">{new Date(entry.timestamp).toLocaleString()}</td>
-                  <td className="p-2">{entry.solar_output} kWh</td>
-                  <td className="p-2">{entry.battery_charge}%</td>
-                  <td className="p-2">{entry.grid_import} kWh</td>
-                  <td className="p-2">{entry.carbon_offset} kg</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
     </div>
   )
 }
